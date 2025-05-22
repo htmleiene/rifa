@@ -85,23 +85,22 @@ function gerarPixCopiaCola(chave, nome, cidade, valor, descricao) {
     payload.push('26360014BR.GOV.BCB.PIX0114' + chave);
     payload.push('52040000');
     payload.push('5303986');
-    payload.push('540' + (valor.toFixed(2).replace('.', '')));
+    payload.push('540' + valor.toFixed(2).replace('.', '').padStart(3, '0'));
     payload.push('5802BR');
     payload.push('5913' + limpa(nome).substring(0, 25));
     payload.push('6013' + limpa(cidade).substring(0, 15));
     payload.push('62070503' + descricao.length.toString().padStart(2, '0') + descricao);
-    payload.push('6304');
 
-    const semCRC = payload.join('');
-    const crc = crc16(semCRC);
-    return semCRC + crc;
+    const payloadSemCRC = payload.join('') + '6304';
+    const crc = crc16(payloadSemCRC);
+    return payloadSemCRC + crc;
 }
 
 function crc16(str) {
     let crc = 0xFFFF;
-    for (let c of str) {
-        crc ^= c.charCodeAt(0) << 8;
-        for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < str.length; i++) {
+        crc ^= str.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
             if ((crc & 0x8000) !== 0) {
                 crc = (crc << 1) ^ 0x1021;
             } else {
