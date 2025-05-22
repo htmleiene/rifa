@@ -10,7 +10,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-const DB_FILE = './db.json';
+const path = require('path');
+const DB_FILE = path.join(__dirname, 'db.json');
 
 // Funções de manipulação do banco de dados
 function readDB() {
