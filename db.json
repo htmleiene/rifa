@@ -42,7 +42,7 @@
     },
     {
       "numero": 11,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 12,
@@ -70,7 +70,7 @@
     },
     {
       "numero": 18,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 19,
@@ -94,7 +94,7 @@
     },
     {
       "numero": 24,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 25,
@@ -130,35 +130,35 @@
     },
     {
       "numero": 33,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 34,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 35,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 36,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 37,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 38,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 39,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 40,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 41,
@@ -198,11 +198,11 @@
     },
     {
       "numero": 50,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 51,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 52,
@@ -230,7 +230,7 @@
     },
     {
       "numero": 58,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 59,
@@ -266,7 +266,7 @@
     },
     {
       "numero": 67,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 68,
