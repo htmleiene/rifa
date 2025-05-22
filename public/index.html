@@ -385,7 +385,7 @@
     let numerosSelecionados = [];
 
     // Carregar números vendidos do backend
-    fetch('http://localhost:3000/api/numeros')
+        fetch('https://rifa-arariboia.onrender.com/api/numeros')
         .then(res => res.json())
         .then(numeros => {
             gerarGridNumeros(numeros);
@@ -441,7 +441,7 @@
         const valor = numerosSelecionados.length * precoPorNumero;
         const descricao = `Rifa Casa Arariboia - Números: ${numerosSelecionados.join(', ')}`;
 
-        fetch(`http://localhost:3000/api/gerar-pix?valor=${valor}&descricao=${encodeURIComponent(descricao)}`)
+        fetch(`https://rifa-arariboia.onrender.com/api/gerar-pix?valor=${valor}&descricao=${encodeURIComponent(descricao)}`)
             .then(res => res.json())
             .then(data => {
                 statusPagamento.style.display = 'block';
@@ -528,18 +528,18 @@
         }, 2000);
     }
 
-    function confirmarCompra() {
-        fetch('http://localhost:3000/api/vender', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ numeros: numerosSelecionados })
-        })
-        .then(res => res.json())
-        .then(() => {
-            alert('Pagamento confirmado! Seus números foram reservados.');
-            window.location.reload();
-        });
-    }
+        function confirmarCompra() {
+            fetch('https://rifa-arariboia.onrender.com/api/vender', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ numeros: numerosSelecionados })
+            })
+            .then(res => res.json())
+            .then(() => {
+                alert('Pagamento confirmado! Seus números foram reservados.');
+                window.location.reload();
+            });
+        }
 
     window.copiarPix = copiarPix;
 </script>
