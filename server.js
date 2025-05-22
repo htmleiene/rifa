@@ -47,25 +47,20 @@ app.post('/api/vender', (req, res) => {
 });
 
 // 💰 Rota para gerar o código PIX
-app.get('/api/gerar-pix', (req, res) => {
-    const { valor, descricao } = req.query;
+app.post('/api/gerar-pix', async (req, res) => {
+    const { valor, descricao } = req.body;
 
-    if (!valor || !descricao) {
-        return res.status(400).json({ error: 'Valor e descrição são obrigatórios.' });
-    }
+    const resultado = await gerarPix(
+        '79991306087',
+        'Catia Modesto',
+        'Aracaju',
+        valor
+    );
 
-    const chave = process.env.CHAVE_PIX;
-    const nome = process.env.NOME_RECEBEDOR;
-    const cidade = process.env.CIDADE_RECEBEDOR;
-
-    const copiaCola = gerarPixCopiaCola(chave, nome, cidade, parseFloat(valor), descricao);
-
-    res.json({ 
-        copiaCola, 
-        chave, 
-        nome, 
-        cidade, 
-        valor: parseFloat(valor) 
+    res.json({
+        copiaCola: resultado.pixCode,
+        qrCodeUrl: resultado.qrCodeUrl,
+        valor
     });
 });
 

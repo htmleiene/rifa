@@ -441,76 +441,80 @@
         const valor = numerosSelecionados.length * precoPorNumero;
         const descricao = `Rifa Casa Arariboia - Números: ${numerosSelecionados.join(', ')}`;
 
-        fetch(`https://rifa-arariboia.onrender.com/api/gerar-pix?valor=${valor}&descricao=${encodeURIComponent(descricao)}`)
-            .then(res => res.json())
-            .then(data => {
-                statusPagamento.style.display = 'block';
-                statusPagamento.innerHTML = `
-                    <div class="pix-header">
-                        <i class="fab fa-pix pix-icon"></i>
-                        <h3>Pagamento via PIX</h3>
-                    </div>
+        fetch('https://rifa-arariboia.onrender.com/api/gerar-pix', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ valor, descricao })
+        })
+        .then(res => res.json())
+        .then(data => {
+            statusPagamento.style.display = 'block';
+            statusPagamento.innerHTML = `
+                <div class="pix-header">
+                    <i class="fab fa-pix pix-icon"></i>
+                    <h3>Pagamento via PIX</h3>
+                </div>
 
-                    <div class="pix-container">
-                        <div class="pix-info">
-                            <p>Para finalizar sua compra, faça o pagamento via PIX usando uma das opções abaixo:</p>
-                            
-                            <div class="pix-amount">
-                                Valor: R$ ${data.valor.toFixed(2)}
+                <div class="pix-container">
+                    <div class="pix-info">
+                        <p>Para finalizar sua compra, faça o pagamento via PIX usando uma das opções abaixo:</p>
+                        
+                        <div class="pix-amount">
+                            Valor: R$ ${data.valor.toFixed(2)}
+                        </div>
+
+                        <div class="pix-key-info">
+                            <p><strong>Chave PIX:</strong> 79991306087</p>
+                            <p><strong>Beneficiário:</strong> Catia Modesto</p>
+                            <p><strong>Cidade:</strong> Aracaju</p>
+                        </div>
+
+                        <div class="pix-copy-section">
+                            <p><strong>Copie o código abaixo e cole no seu aplicativo de pagamentos:</strong></p>
+                            <textarea class="pix-textarea" id="pixCode" readonly>${data.copiaCola}</textarea>
+                            <button class="copy-btn" onclick="copiarPix()">
+                                <i class="fas fa-copy"></i> Copiar Código PIX
+                            </button>
+                        </div>
+
+                        <div class="pix-steps">
+                            <h4>Como pagar:</h4>
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">Abra seu aplicativo bancário ou carteira digital</div>
                             </div>
-
-                            <div class="pix-key-info">
-                                <p><strong>Chave PIX:</strong> ${data.chave}</p>
-                                <p><strong>Beneficiário:</strong> ${data.nome}</p>
-                                <p><strong>Cidade:</strong> ${data.cidade}</p>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">Acesse a opção PIX e escolha "Pagar com PIX Copia e Cola"</div>
                             </div>
-
-                            <div class="pix-copy-section">
-                                <p><strong>Copie o código abaixo e cole no seu aplicativo de pagamentos:</strong></p>
-                                <textarea class="pix-textarea" id="pixCode" readonly>${data.copiaCola}</textarea>
-                                <button class="copy-btn" onclick="copiarPix()">
-                                    <i class="fas fa-copy"></i> Copiar Código PIX
-                                </button>
-                            </div>
-
-                            <div class="pix-steps">
-                                <h4>Como pagar:</h4>
-                                <div class="step">
-                                    <div class="step-number">1</div>
-                                    <div class="step-content">Abra seu aplicativo bancário ou carteira digital</div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-number">2</div>
-                                    <div class="step-content">Acesse a opção PIX e escolha "Pagar com PIX Copia e Cola"</div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-number">3</div>
-                                    <div class="step-content">Cole o código copiado e confirme o pagamento</div>
-                                </div>
-                            </div>
-
-                            <div class="pix-note">
-                                <i class="fas fa-info-circle"></i>
-                                <span>Assim que confirmarmos seu pagamento, seus números serão reservados automaticamente.</span>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">Cole o código copiado e confirme o pagamento</div>
                             </div>
                         </div>
 
-                        <div class="pix-qrcode-container">
-                            <p><strong>Ou escaneie este QR Code:</strong></p>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(data.copiaCola)}" alt="QR Code PIX">
-                            <p style="text-align: center; margin-top: 15px; font-size: 0.9rem; color: var(--gray);">
-                                <i class="fas fa-camera"></i> Use a câmera do seu app de pagamentos
-                            </p>
+                        <div class="pix-note">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Assim que confirmarmos seu pagamento, seus números serão reservados automaticamente.</span>
                         </div>
                     </div>
 
-                    <button class="confirm-btn" onclick="confirmarCompra()">
-                        <i class="fas fa-check-circle"></i> Já efetuei o pagamento
-                    </button>
-                `;
+                    <div class="pix-qrcode-container">
+                        <p><strong>Ou escaneie este QR Code:</strong></p>
+                        <img src="${data.qrCodeUrl}" alt="QR Code PIX">
+                        <p style="text-align: center; margin-top: 15px; font-size: 0.9rem; color: var(--gray);">
+                            <i class="fas fa-camera"></i> Use a câmera do seu app de pagamentos
+                        </p>
+                    </div>
+                </div>
 
-                statusPagamento.scrollIntoView({ behavior: 'smooth' });
-            });
+                <button class="confirm-btn" onclick="confirmarCompra()">
+                    <i class="fas fa-check-circle"></i> Já efetuei o pagamento
+                </button>
+            `;
+
+            statusPagamento.scrollIntoView({ behavior: 'smooth' });
+        });
     });
 
     function copiarPix() {
