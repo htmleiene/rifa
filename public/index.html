@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rifa Solidária - Pagamento via PIX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3f37c9;
+            --pix-green: #32BCAD;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --white: #ffffff;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header, footer {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            padding: 25px 20px;
+            text-align: center;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
+        
+        .premio {
+            background: var(--white);
+            padding: 30px;
+            margin: 20px auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            max-width: 1000px;
+        }
+
+        .premio-conteudo {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .premio-conteudo img {
+            max-width: 300px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .descricao-premio {
+            text-align: center;
+        }
+
+        .descricao-premio h2 {
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+
+        .descricao-premio p {
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Responsivo */
+        @media (min-width: 768px) {
+            .premio-conteudo {
+                flex-direction: row;
+                align-items: center;
+                text-align: left;
+            }
+
+            .descricao-premio {
+                flex: 1;
+            }
+        }
+
+        .numero {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 45px;
+            height: 45px;
+            background: var(--white);
+            color: var(--primary-dark);
+            margin: 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: 500;
+            border: 2px solid var(--primary);
+            transition: 0.3s;
+        }
+        
+        .numero:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .numero.selecionado {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .numero.indisponivel {
+            background: var(--gray);
+            color: var(--white);
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+        
+        .carrinho {
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin-top: 30px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        button {
+            background: var(--primary);
+            color: var(--white);
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            font-weight: 600;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+        
+        /* ESTILOS ESPECÍFICOS PARA A SEÇÃO PIX */
+        #statusPagamento {
+            background: var(--white);
+            padding: 30px;
+            margin-top: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+        
+        .pix-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .pix-header h3 {
+            margin: 0;
+            color: var(--dark);
+            font-size: 1.5rem;
+        }
+        
+        .pix-icon {
+            color: var(--pix-green);
+            font-size: 2rem;
+        }
+        
+        .pix-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        @media (min-width: 768px) {
+            .pix-container {
+                flex-direction: row;
+            }
+        }
+        
+        .pix-info {
+            flex: 1;
+        }
+        
+        .pix-qrcode-container {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .pix-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(50, 188, 173, 0.1);
+            border-radius: var(--border-radius);
+            border: 2px dashed var(--pix-green);
+        }
+        
+        .pix-key-info {
+            background: var(--light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+        }
+        
+        .pix-key-info p {
+            margin: 5px 0;
+        }
+        
+        .pix-key-info strong {
+            color: var(--primary-dark);
+        }
+        
+        .pix-copy-section {
+            margin: 25px 0;
+        }
+        
+        .pix-copy-section p {
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .pix-textarea {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            border: 2px solid var(--pix-green);
+            border-radius: var(--border-radius);
+            font-family: 'Poppins', sans-serif;
+            resize: none;
+            margin-bottom: 15px;
+            background: var(--light);
+        }
+        
+        .copy-btn {
+            background: var(--pix-green);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .copy-btn:hover {
+            background: #2aa89a;
+            transform: translateY(-2px);
+        }
+        
+        .pix-steps {
+            margin-top: 30px;
+        }
+        
+        .step {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+        
+        .step-number {
+            background: var(--pix-green);
+            color: var(--white);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .pix-note {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .pix-note i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+        
+        .confirm-btn {
+            background: var(--success);
+            margin-top: 25px;
+        }
+        
+        .confirm-btn:hover {
+            background: #3d8b40;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>Rifa Solidária - Casa Arariboia</h1>
+</header>
+
+<section class="premio">
+    <div class="premio-conteudo">
+        <img src="imagens/premio.jpg" alt="Prêmio da Rifa">
+        <div class="descricao-premio">
+            <h2>Prêmio: Mandala Yemanjá</h2>
+            <p>Participe da nossa rifa solidária e concorra a uma linda <strong>Mandala artesanal pintada a mão canalizando a imagem de Yemanjá</strong>. Todo o valor arrecadado será destinado para apoiar os projetos da Casa Arariboia. Adquira seu número e ajude quem precisa!</p>
+        </div>
+    </div>
+</section>
+
+    <main class="container">
+        <section>
+            <h2>Escolha seus números (R$ 3,00 cada)</h2>
+            <div id="numerosGrid"></div>
+        </section>
+
+        <section class="carrinho">
+            <h2>Seu Pedido</h2>
+            <div id="carrinhoItens">Nenhum número selecionado.</div>
+            <div id="totalCarrinho">Total: R$ 0,00</div>
+            <button id="finalizarCompra" disabled>
+                <i class="fas fa-qrcode"></i> Finalizar Compra via PIX
+            </button>
+            <div id="statusPagamento"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Rifa Casa Arariboia</p>
+    </footer>
+
+<script>
+    const precoPorNumero = 3.00;
+
+    const numerosGrid = document.getElementById('numerosGrid');
+    const carrinhoItens = document.getElementById('carrinhoItens');
+    const totalCarrinho = document.getElementById('totalCarrinho');
+    const finalizarCompra = document.getElementById('finalizarCompra');
+    const statusPagamento = document.getElementById('statusPagamento');
+
+    let numerosSelecionados = [];
+
+    // Carregar números vendidos do backend
+    fetch('http://localhost:3000/api/numeros')
+        .then(res => res.json())
+        .then(numeros => {
+            gerarGridNumeros(numeros);
+        });
+
+    function gerarGridNumeros(numeros) {
+        numerosGrid.innerHTML = '';
+        numeros.forEach(item => {
+            const num = document.createElement('div');
+            num.classList.add('numero');
+
+            if (item.status === 'vendido') {
+                num.classList.add('indisponivel');
+                num.title = 'Número já vendido';
+            } else {
+                num.addEventListener('click', () => toggleNumero(item.numero, num));
+            }
+
+            num.innerText = item.numero;
+            numerosGrid.appendChild(num);
+        });
+    }
+
+    function toggleNumero(numero, elemento) {
+        if (numerosSelecionados.includes(numero)) {
+            numerosSelecionados = numerosSelecionados.filter(n => n !== numero);
+            elemento.classList.remove('selecionado');
+        } else {
+            numerosSelecionados.push(numero);
+            elemento.classList.add('selecionado');
+        }
+        atualizarCarrinho();
+    }
+
+    function atualizarCarrinho() {
+        carrinhoItens.innerHTML = '';
+        if (numerosSelecionados.length === 0) {
+            carrinhoItens.innerHTML = 'Nenhum número selecionado.';
+            finalizarCompra.disabled = true;
+        } else {
+            numerosSelecionados.sort((a, b) => a - b).forEach(n => {
+                const item = document.createElement('div');
+                item.innerHTML = `<span>Número ${n}</span> - R$ ${precoPorNumero.toFixed(2)}`;
+                carrinhoItens.appendChild(item);
+            });
+            finalizarCompra.disabled = false;
+        }
+        const total = numerosSelecionados.length * precoPorNumero;
+        totalCarrinho.innerHTML = `Total: R$ ${total.toFixed(2)}`;
+    }
+
+    finalizarCompra.addEventListener('click', () => {
+        const valor = numerosSelecionados.length * precoPorNumero;
+        const descricao = `Rifa Casa Arariboia - Números: ${numerosSelecionados.join(', ')}`;
+
+        fetch(`http://localhost:3000/api/gerar-pix?valor=${valor}&descricao=${encodeURIComponent(descricao)}`)
+            .then(res => res.json())
+            .then(data => {
+                statusPagamento.style.display = 'block';
+                statusPagamento.innerHTML = `
+                    <div class="pix-header">
+                        <i class="fab fa-pix pix-icon"></i>
+                        <h3>Pagamento via PIX</h3>
+                    </div>
+
+                    <div class="pix-container">
+                        <div class="pix-info">
+                            <p>Para finalizar sua compra, faça o pagamento via PIX usando uma das opções abaixo:</p>
+                            
+                            <div class="pix-amount">
+                                Valor: R$ ${data.valor.toFixed(2)}
+                            </div>
+
+                            <div class="pix-key-info">
+                                <p><strong>Chave PIX:</strong> ${data.chave}</p>
+                                <p><strong>Beneficiário:</strong> ${data.nome}</p>
+                                <p><strong>Cidade:</strong> ${data.cidade}</p>
+                            </div>
+
+                            <div class="pix-copy-section">
+                                <p><strong>Copie o código abaixo e cole no seu aplicativo de pagamentos:</strong></p>
+                                <textarea class="pix-textarea" id="pixCode" readonly>${data.copiaCola}</textarea>
+                                <button class="copy-btn" onclick="copiarPix()">
+                                    <i class="fas fa-copy"></i> Copiar Código PIX
+                                </button>
+                            </div>
+
+                            <div class="pix-steps">
+                                <h4>Como pagar:</h4>
+                                <div class="step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">Abra seu aplicativo bancário ou carteira digital</div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">Acesse a opção PIX e escolha "Pagar com PIX Copia e Cola"</div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">Cole o código copiado e confirme o pagamento</div>
+                                </div>
+                            </div>
+
+                            <div class="pix-note">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Assim que confirmarmos seu pagamento, seus números serão reservados automaticamente.</span>
+                            </div>
+                        </div>
+
+                        <div class="pix-qrcode-container">
+                            <p><strong>Ou escaneie este QR Code:</strong></p>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(data.copiaCola)}" alt="QR Code PIX">
+                            <p style="text-align: center; margin-top: 15px; font-size: 0.9rem; color: var(--gray);">
+                                <i class="fas fa-camera"></i> Use a câmera do seu app de pagamentos
+                            </p>
+                        </div>
+                    </div>
+
+                    <button class="confirm-btn" onclick="confirmarCompra()">
+                        <i class="fas fa-check-circle"></i> Já efetuei o pagamento
+                    </button>
+                `;
+
+                statusPagamento.scrollIntoView({ behavior: 'smooth' });
+            });
+    });
+
+    function copiarPix() {
+        const pixCode = document.getElementById('pixCode');
+        pixCode.select();
+        document.execCommand('copy');
+
+        const copyBtn = document.querySelector('.copy-btn');
+        copyBtn.innerHTML = '<i class="fas fa-check"></i> Código copiado!';
+        copyBtn.style.background = 'var(--success)';
+
+        setTimeout(() => {
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copiar Código PIX';
+            copyBtn.style.background = 'var(--pix-green)';
+        }, 2000);
+    }
+
+    function confirmarCompra() {
+        fetch('http://localhost:3000/api/vender', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ numeros: numerosSelecionados })
+        })
+        .then(res => res.json())
+        .then(() => {
+            alert('Pagamento confirmado! Seus números foram reservados.');
+            window.location.reload();
+        });
+    }
+
+    window.copiarPix = copiarPix;
+</script>
+</body>
+</html>
