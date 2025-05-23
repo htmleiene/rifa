@@ -12,8 +12,9 @@ app.use(express.json());
 app.use(express.static('public'));
 
 const DB_FILE = path.join(__dirname, 'db.json');
+const PIX_DB_FILE = path.join(__dirname, 'pixDB.json');
 
-// Funções de manipulação do banco de dados
+// 🔧 Funções para manipular banco de dados
 function readDB() {
     const data = fs.readFileSync(DB_FILE);
     return JSON.parse(data);
@@ -23,15 +24,21 @@ function saveDB(data) {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-// 🔢 Rota para listar os números
+function readPixDB() {
+    const data = fs.readFileSync(PIX_DB_FILE);
+    return JSON.parse(data);
+}
+
+// 🔢 Listar números
 app.get('/api/numeros', (req, res) => {
     const db = readDB();
     res.json(db.numeros);
 });
 
-// ✅ Rota para reservar/vender números
+// ✅ Vender números
 app.post('/api/vender', (req, res) => {
     const { numeros } = req.body;
+
     if (!Array.isArray(numeros) || numeros.length === 0) {
         return res.status(400).json({ error: 'Nenhum número enviado' });
     }
@@ -46,63 +53,29 @@ app.post('/api/vender', (req, res) => {
     res.json({ message: 'Números reservados com sucesso!' });
 });
 
-// 💰 Rota para gerar o código PIX
-app.post('/api/gerar-pix', async (req, res) => {
-    const { valor, descricao } = req.body;
+// 💰 Buscar PIX já salvo
+app.post('/api/gerar-pix', (req, res) => {
+    const { valor } = req.body;
 
-    const resultado = await gerarPix(
-        '79991306087',
-        'Catia Modesto',
-        'Aracaju',
-        valor
-    );
+    if (!valor) {
+        return res.status(400).json({ error: 'Valor não informado' });
+    }
+
+    const pixDB = readPixDB();
+    const chave = pixDB[valor];
+
+    if (!chave) {
+        return res.status(404).json({ error: 'Valor não cadastrado no PIX DB' });
+    }
 
     res.json({
-        copiaCola: resultado.pixCode,
-        qrCodeUrl: resultado.qrCodeUrl,
+        copiaCola: chave.copiaCola,
+        qrCodeUrl: chave.qrCode,
         valor
     });
 });
 
-// 🚀 Inicializa o servidor
+// 🚀 Start server
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
-
-// 🔧 Funções auxiliares para gerar PIX Copia e Cola
-function gerarPixCopiaCola(chave, nome, cidade, valor, descricao) {
-    function limpa(str) {
-        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-    }
-
-    const payload = [];
-    payload.push('000201');
-    payload.push('26360014BR.GOV.BCB.PIX0114' + chave);
-    payload.push('52040000');
-    payload.push('5303986');
-    payload.push('540' + valor.toFixed(2).replace('.', '').padStart(3, '0'));
-    payload.push('5802BR');
-    payload.push('5913' + limpa(nome).substring(0, 25));
-    payload.push('6013' + limpa(cidade).substring(0, 15));
-    payload.push('62070503' + descricao.length.toString().padStart(2, '0') + descricao);
-
-    const payloadSemCRC = payload.join('') + '6304';
-    const crc = crc16(payloadSemCRC);
-    return payloadSemCRC + crc;
-}
-
-function crc16(str) {
-    let crc = 0xFFFF;
-    for (let i = 0; i < str.length; i++) {
-        crc ^= str.charCodeAt(i) << 8;
-        for (let j = 0; j < 8; j++) {
-            if ((crc & 0x8000) !== 0) {
-                crc = (crc << 1) ^ 0x1021;
-            } else {
-                crc = crc << 1;
-            }
-        }
-        crc &= 0xFFFF;
-    }
-    return crc.toString(16).toUpperCase().padStart(4, '0');
-}

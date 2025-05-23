@@ -1,0 +1,52 @@
+[
+  {
+    "valor": 3,
+    "copiaCola": "00020126360014br.gov.bcb.pix0114+557999130608752040000530398654043.005802BR5913Catia Modesto6007Aracaju62180514TXg1mg5e5176326304C6EB",
+    "qrCodeUrl": "3reais.png"
+  },
+  {
+    "valor": 6,
+    "copiaCola": "00020126360014br.gov.bcb.pix0114+557999130608752040000530398654046.005802BR5913Catia Modesto6007Aracaju62180514TXg1mg5e51763263045192",
+    "qrCodeUrl": "6reais.png"
+  },
+  {
+    "valor": 9,
+    "copiaCola": "00020126360014br.gov.bcb.pix0114+557999130608752040000530398654049.005802BR5913Catia Modesto6007Aracaju62180514TXg1mg5e5176326304F838",
+    "qrCodeUrl": "9reais.png"
+  },
+  {
+    "valor": 12,
+    "copiaCola": "00020126360014br.gov.bcb.pix0114+5579991306087520400005303986540512.005802BR5913Catia Modesto6007Aracaju62180514TXg1mg5e517632630438B8",
+    "qrCodeUrl": "12reais.png"
+  },
+  {
+    "valor": 15,
+    "copiaCola": "00020126360014br.gov.bcb.pix0114+5579991306087520400005303986540515.005802BR5913Catia Modesto6007Aracaju62180514TXg1mg5e51763263040344",
+    "qrCodeUrl": "15reais.png"
+  },
+  {
+    "valor": 18,
+    "copiaCola": "00020126360014br.gov.bcb.pix0114+5579991306087520400005303986540518.005802BR5913Catia Modesto6007Aracaju62180514TXb8o2z6lb79996304F808",
+    "qrCodeUrl": "18reais.png"
+  },
+  {
+    "valor": 21,
+    "copiaCola": "00020126360014br.gov.bcb.pix0114+5579991306087520400005303986540521.005802BR5913Catia Modesto6007Aracaju62180514TXb8o2z6lb799963043DD9",
+    "qrCodeUrl": "21reais.png"
+  },
+  {
+    "valor": 24,
+    "copiaCola": "00020126360014br.gov.bcb.pix0114+5579991306087520400005303986540524.005802BR5913Catia Modesto6007Aracaju62180514TXb8o2z6lb79996304AAA0",
+    "qrCodeUrl": "24reais.png"
+  },
+  {
+    "valor": 27,
+    "copiaCola": "00020126360014br.gov.bcb.pix0114+5579991306087520400005303986540527.005802BR5913Catia Modesto6007Aracaju62180514TXb8o2z6lb79996304D877",
+    "qrCodeUrl": "27reais.png"
+  },
+  {
+    "valor": 30,
+    "copiaCola": "00020126360014br.gov.bcb.pix0114+5579991306087520400005303986540530.005802BR5913Catia Modesto6007Aracaju62180514TXb8o2z6lb799963049B38",
+    "qrCodeUrl": "30reais.png"
+  }
+]
