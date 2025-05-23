@@ -463,13 +463,19 @@
     }
 
     finalizarCompra.addEventListener('click', () => {
+        const nome = document.getElementById('nomeComprador').value.trim();
+        if (!nome) {
+            alert('Por favor, preencha seu nome antes de finalizar.');
+            return;
+        }
+
         const valor = numerosSelecionados.length * precoPorNumero;
         const descricao = `Rifa Casa Arariboia - Números: ${numerosSelecionados.join(', ')}`;
 
-        fetch('https://rifa-arariboia.onrender.com/api/gerar-pix', {
+        fetch('/api/gerar-pix', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ valor, descricao })
+            body: JSON.stringify({ valor })
         })
         .then(res => res.json())
         .then(data => {
@@ -479,65 +485,32 @@
                     <i class="fab fa-pix pix-icon"></i>
                     <h3>Pagamento via PIX</h3>
                 </div>
-
                 <div class="pix-container">
                     <div class="pix-info">
-                        <p>Para finalizar sua compra, faça o pagamento via PIX usando uma das opções abaixo:</p>
-                        
-                        <div class="pix-amount">
-                            Valor: R$ ${data.valor.toFixed(2)}
-                        </div>
-
+                        <p>Para finalizar sua compra, faça o pagamento via PIX:</p>
+                        <div class="pix-amount">Valor: R$ ${data.valor.toFixed(2)}</div>
                         <div class="pix-key-info">
                             <p><strong>Chave PIX:</strong> 79991306087</p>
                             <p><strong>Beneficiário:</strong> Catia Modesto</p>
                             <p><strong>Cidade:</strong> Aracaju</p>
                         </div>
-
                         <div class="pix-copy-section">
-                            <p><strong>Copie o código abaixo e cole no seu aplicativo de pagamentos:</strong></p>
+                            <p><strong>Copie o código abaixo:</strong></p>
                             <textarea class="pix-textarea" id="pixCode" readonly>${data.copiaCola}</textarea>
                             <button class="copy-btn" onclick="copiarPix()">
                                 <i class="fas fa-copy"></i> Copiar Código PIX
                             </button>
                         </div>
-
-                        <div class="pix-steps">
-                            <h4>Como pagar:</h4>
-                            <div class="step">
-                                <div class="step-number">1</div>
-                                <div class="step-content">Abra seu aplicativo bancário ou carteira digital</div>
-                            </div>
-                            <div class="step">
-                                <div class="step-number">2</div>
-                                <div class="step-content">Acesse a opção PIX e escolha "Pagar com PIX Copia e Cola"</div>
-                            </div>
-                            <div class="step">
-                                <div class="step-number">3</div>
-                                <div class="step-content">Cole o código copiado e confirme o pagamento</div>
-                            </div>
-                        </div>
-
-                        <div class="pix-note">
-                            <i class="fas fa-info-circle"></i>
-                            <span>Assim que confirmarmos seu pagamento, seus números serão reservados automaticamente.</span>
-                        </div>
                     </div>
-
                     <div class="pix-qrcode-container">
                         <p><strong>Ou escaneie este QR Code:</strong></p>
                         <img src="${data.qrCodeUrl}" alt="QR Code PIX">
-                        <p style="text-align: center; margin-top: 15px; font-size: 0.9rem; color: var(--gray);">
-                            <i class="fas fa-camera"></i> Use a câmera do seu app de pagamentos
-                        </p>
                     </div>
                 </div>
-
                 <button class="confirm-btn" onclick="confirmarCompra()">
                     <i class="fas fa-check-circle"></i> Já efetuei o pagamento
                 </button>
             `;
-
             statusPagamento.scrollIntoView({ behavior: 'smooth' });
         });
     });
@@ -557,18 +530,31 @@
         }, 2000);
     }
 
-        function confirmarCompra() {
-            fetch('https://rifa-arariboia.onrender.com/api/vender', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ numeros: numerosSelecionados })
-            })
-            .then(res => res.json())
-            .then(() => {
-                alert('Pagamento confirmado! Seus números foram reservados.');
-                window.location.reload();
-            });
+    function confirmarCompra() {
+        const nome = document.getElementById('nomeComprador').value.trim();
+        if (!nome) {
+            alert('Por favor, preencha seu nome antes de confirmar.');
+            return;
         }
+
+        fetch('/api/vender', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                numeros: numerosSelecionados,
+                nome: nome
+            })
+        })
+        .then(res => res.json())
+        .then(() => {
+            alert('Pagamento confirmado! Seus números foram reservados.');
+            window.location.reload();
+        })
+        .catch(() => {
+            alert('Ocorreu um erro ao confirmar o pagamento. Tente novamente.');
+        });
+    }
+
 
     window.copiarPix = copiarPix;
 </script>

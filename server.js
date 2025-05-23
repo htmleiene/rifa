@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// 🗂️ Funções do banco
+// 🗂️ Funções utilitárias
 function readDB() {
     const data = fs.readFileSync(DB_FILE);
     return JSON.parse(data);
@@ -37,18 +37,19 @@ function saveCompradores(data) {
 }
 
 function readPixDB() {
-    if (!fs.existsSync(PIX_FILE)) return {};
+    if (!fs.existsSync(PIX_FILE)) return [];
     const data = fs.readFileSync(PIX_FILE);
     return JSON.parse(data);
 }
 
-// 🔢 Listar números
+// 🔢 Rota para listar os números
 app.get('/api/numeros', (req, res) => {
     const db = readDB();
     res.json(db.numeros);
 });
 
-// ✅ Reservar/vender números
+// ✅ Rota para reservar/vender números
+// ✅ Rota para reservar/vender números
 app.post('/api/vender', (req, res) => {
     const { numeros, nome } = req.body;
     if (!nome || !Array.isArray(numeros) || numeros.length === 0) {
@@ -75,13 +76,12 @@ app.post('/api/vender', (req, res) => {
     res.json({ message: 'Números reservados com sucesso!' });
 });
 
-// 💰 Gerar PIX
+// 💰 Rota para gerar PIX (lendo do pixDB.json)
 app.post('/api/gerar-pix', (req, res) => {
     const { valor } = req.body;
     const pixDB = readPixDB();
 
-    const chave = Number(valor).toFixed(2);
-    const dadosPix = pixDB[chave];
+    const dadosPix = pixDB.find(p => p.valor === Number(valor));
 
     if (!dadosPix) {
         return res.status(404).json({ error: 'QR Code não cadastrado para esse valor' });
@@ -89,18 +89,18 @@ app.post('/api/gerar-pix', (req, res) => {
 
     res.json({
         copiaCola: dadosPix.copiaCola,
-        qrCodeUrl: `/qrcode/${dadosPix.qrCode}`, // ✅ Caminho corrigido
+        qrCodeUrl: `/qrcode/${dadosPix.qrCodeUrl}`,  // ✅ Caminho correto
         valor: Number(valor)
     });
 });
 
-// 📥 Listar compras
+// 📥 Rota para listar compras em JSON
 app.get('/api/compras', (req, res) => {
     const compradores = readCompradores();
     res.json(compradores);
 });
 
-// 📄 Exportar CSV
+// 📄 Rota para baixar compras em CSV
 app.get('/api/compras-csv', (req, res) => {
     const compradores = readCompradores();
 
