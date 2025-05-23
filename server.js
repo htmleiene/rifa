@@ -7,14 +7,17 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Arquivos de banco
+const DB_FILE = path.join(__dirname, 'db.json');
+const COMPRADORES_FILE = path.join(__dirname, 'compradores.json');
+const PIX_FILE = path.join(__dirname, 'pixDB.json');
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-const DB_FILE = path.join(__dirname, 'db.json');
-const PIX_DB_FILE = path.join(__dirname, 'pixDB.json');
 
-// 🔧 Funções para manipular banco de dados
+// 🗂️ Funções de manipulação do banco
 function readDB() {
     const data = fs.readFileSync(DB_FILE);
     return JSON.parse(data);
@@ -24,58 +27,102 @@ function saveDB(data) {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-function readPixDB() {
-    const data = fs.readFileSync(PIX_DB_FILE);
+function readCompradores() {
+    if (!fs.existsSync(COMPRADORES_FILE)) return [];
+    const data = fs.readFileSync(COMPRADORES_FILE);
     return JSON.parse(data);
 }
 
-// 🔢 Listar números
+function saveCompradores(data) {
+    fs.writeFileSync(COMPRADORES_FILE, JSON.stringify(data, null, 2));
+}
+
+function readPixDB() {
+    if (!fs.existsSync(PIX_FILE)) return {};
+    const data = fs.readFileSync(PIX_FILE);
+    return JSON.parse(data);
+}
+
+
+// 🔢 Rota para listar os números
 app.get('/api/numeros', (req, res) => {
     const db = readDB();
     res.json(db.numeros);
 });
 
-// ✅ Vender números
-app.post('/api/vender', (req, res) => {
-    const { numeros } = req.body;
 
-    if (!Array.isArray(numeros) || numeros.length === 0) {
-        return res.status(400).json({ error: 'Nenhum número enviado' });
+// ✅ Rota para reservar/vender números
+app.post('/api/vender', (req, res) => {
+    const { numeros, nome } = req.body;
+    if (!nome || !Array.isArray(numeros) || numeros.length === 0) {
+        return res.status(400).json({ error: 'Nome e números são obrigatórios' });
     }
 
     const db = readDB();
+    const compradores = readCompradores();
+
     numeros.forEach(numero => {
         const item = db.numeros.find(n => n.numero === numero);
         if (item) item.status = 'vendido';
     });
 
+    compradores.push({
+        nome,
+        numeros,
+        data: new Date().toISOString()
+    });
+
     saveDB(db);
+    saveCompradores(compradores);
+
     res.json({ message: 'Números reservados com sucesso!' });
 });
 
-// 💰 Buscar PIX já salvo
+
+// 💰 Rota para gerar PIX (consultando pixDB.json)
 app.post('/api/gerar-pix', (req, res) => {
     const { valor } = req.body;
-
-    if (!valor) {
-        return res.status(400).json({ error: 'Valor não informado' });
-    }
-
     const pixDB = readPixDB();
-    const chave = pixDB[valor];
 
-    if (!chave) {
-        return res.status(404).json({ error: 'Valor não cadastrado no PIX DB' });
+    const chave = Number(valor).toFixed(2);
+    const dadosPix = pixDB[chave];
+
+    if (!dadosPix) {
+        return res.status(404).json({ error: 'QR Code não cadastrado para esse valor' });
     }
 
     res.json({
-        copiaCola: chave.copiaCola,
-        qrCodeUrl: chave.qrCode,
-        valor
+        copiaCola: dadosPix.copiaCola,
+        qrCodeUrl: `public/qrcode/${dadosPix.qrCode}`,
+        valor: Number(valor)
     });
 });
 
-// 🚀 Start server
+
+// 📥 Rota para listar compras em JSON
+app.get('/api/compras', (req, res) => {
+    const compradores = readCompradores();
+    res.json(compradores);
+});
+
+// 📄 Rota para baixar compras em CSV
+app.get('/api/compras-csv', (req, res) => {
+    const compradores = readCompradores();
+
+    const header = 'Nome,Números,Data\n';
+    const rows = compradores.map(c =>
+        `${c.nome},"${c.numeros.join(' ')}",${c.data}`
+    ).join('\n');
+
+    const csv = header + rows;
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=compras.csv');
+    res.send(csv);
+});
+
+
+// 🚀 Inicializa servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

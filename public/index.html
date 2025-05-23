@@ -78,6 +78,20 @@
             line-height: 1.6;
         }
 
+        .form-group {
+            margin-bottom: 20px;
+            margin-left: 120px;
+        }
+
+        input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            border: 2px solid var(--primary);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+
         /* Responsivo */
         @media (min-width: 768px) {
             .premio-conteudo {
@@ -351,6 +365,10 @@
         </div>
     </div>
 </section>
+    <div class="form-group">
+        <label for="nomeComprador">Seu nome:</label>
+        <input type="text" id="nomeComprador" placeholder="Digite seu nome completo" required>
+    </div>
 
     <main class="container">
         <section>
@@ -410,6 +428,13 @@
     }
 
     function toggleNumero(numero, elemento) {
+        const nome = document.getElementById('nomeComprador').value.trim();
+
+        if (!nome) {
+            alert('Por favor, preencha seu nome antes de selecionar os números.');
+            return;
+        }
+
         if (numerosSelecionados.includes(numero)) {
             numerosSelecionados = numerosSelecionados.filter(n => n !== numero);
             elemento.classList.remove('selecionado');
