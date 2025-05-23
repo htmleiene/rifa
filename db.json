@@ -2,7 +2,7 @@
   "numeros": [
     {
       "numero": 1,
-      "status": "vendido"
+      "status": "disponivel"
     },
     {
       "numero": 2,
