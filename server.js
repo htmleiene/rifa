@@ -28,8 +28,14 @@ function saveDB(data) {
 
 function readCompradores() {
     if (!fs.existsSync(COMPRADORES_FILE)) return [];
-    const data = fs.readFileSync(COMPRADORES_FILE);
-    return JSON.parse(data);
+    const data = fs.readFileSync(COMPRADORES_FILE, 'utf-8');
+    if (!data) return [];
+    try {
+        return JSON.parse(data);
+    } catch (e) {
+        console.error('Erro ao ler compradores.json:', e);
+        return [];
+    }
 }
 
 function saveCompradores(data) {
@@ -48,7 +54,7 @@ app.get('/api/numeros', (req, res) => {
     res.json(db.numeros);
 });
 
-// ✅ Rota para reservar/vender números
+
 // ✅ Rota para reservar/vender números
 app.post('/api/vender', (req, res) => {
     const { numeros, nome } = req.body;
