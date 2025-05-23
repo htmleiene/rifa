@@ -16,8 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-
-// 🗂️ Funções de manipulação do banco
+// 🗂️ Funções do banco
 function readDB() {
     const data = fs.readFileSync(DB_FILE);
     return JSON.parse(data);
@@ -43,15 +42,13 @@ function readPixDB() {
     return JSON.parse(data);
 }
 
-
-// 🔢 Rota para listar os números
+// 🔢 Listar números
 app.get('/api/numeros', (req, res) => {
     const db = readDB();
     res.json(db.numeros);
 });
 
-
-// ✅ Rota para reservar/vender números
+// ✅ Reservar/vender números
 app.post('/api/vender', (req, res) => {
     const { numeros, nome } = req.body;
     if (!nome || !Array.isArray(numeros) || numeros.length === 0) {
@@ -78,8 +75,7 @@ app.post('/api/vender', (req, res) => {
     res.json({ message: 'Números reservados com sucesso!' });
 });
 
-
-// 💰 Rota para gerar PIX (consultando pixDB.json)
+// 💰 Gerar PIX
 app.post('/api/gerar-pix', (req, res) => {
     const { valor } = req.body;
     const pixDB = readPixDB();
@@ -93,19 +89,18 @@ app.post('/api/gerar-pix', (req, res) => {
 
     res.json({
         copiaCola: dadosPix.copiaCola,
-        qrCodeUrl: `public/qrcode/${dadosPix.qrCode}`,
+        qrCodeUrl: `/qrcode/${dadosPix.qrCode}`, // ✅ Caminho corrigido
         valor: Number(valor)
     });
 });
 
-
-// 📥 Rota para listar compras em JSON
+// 📥 Listar compras
 app.get('/api/compras', (req, res) => {
     const compradores = readCompradores();
     res.json(compradores);
 });
 
-// 📄 Rota para baixar compras em CSV
+// 📄 Exportar CSV
 app.get('/api/compras-csv', (req, res) => {
     const compradores = readCompradores();
 
@@ -120,7 +115,6 @@ app.get('/api/compras-csv', (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename=compras.csv');
     res.send(csv);
 });
-
 
 // 🚀 Inicializa servidor
 app.listen(PORT, () => {
