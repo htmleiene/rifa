@@ -80,18 +80,25 @@
 
         .form-group {
             margin-bottom: 20px;
-            margin-left: 120px;
+            text-align: center;
         }
 
-        input[type="text"] {
-            width: 60%;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-weight: bold;
+
+        }
+
+        .form-group input[type="text"] {
+            width: 90%;
+            max-width: 400px;
             padding: 10px;
             border: 2px solid var(--primary);
             border-radius: var(--border-radius);
             font-size: 1rem;
         }
-
-
         /* Responsivo */
         @media (min-width: 768px) {
             .premio-conteudo {
