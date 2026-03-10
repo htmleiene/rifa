@@ -20,7 +20,7 @@ const puppeteer = require('puppeteer');
   await page.type('input#city', 'Aracaju');
 
   // Preenche o campo de valor
-  await page.type('input#amount', '3');
+  await page.type('input#amount', '5');
 
   // Clica no botão "Gerar QR Code PIX"
   await page.click('button[type="submit"]');
